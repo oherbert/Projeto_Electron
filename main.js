@@ -1,37 +1,19 @@
 // Modules
 const {app, BrowserWindow, Menu} = require('electron');
 const windowStateKeeper = require('electron-window-state');
-const run = require('./database');
-const os = require('os');
+const mainMenu = require('./Screen/menus');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow;
 
-const computerName = os.hostname();
-console.log(computerName);
-
-const mainMenu = Menu.buildFromTemplate([
-  {
-    label:'Principal',
-    submenu: [
-      {label:'Salvar',click:()=>{console.log('Click em salvar')}, accelerator:'Ctrl+S'},
-      {label:'Tela Cheia',role:'togglefullscreen'},
-      {label:'Sistema', 
-            submenu:[{label:'Sair',click:()=>{console.log('Click em sair')},accelerator:'Esc'},
-                     {label:'Help'}]}
-    ]
-  }
-])
-
 // Create a new BrowserWindow when `app` is ready
 function createWindow () {
 
-  // Savar a possição da Tela
   const winState = windowStateKeeper({
     defaultWidth: 1000, defaultHeight:800
-  })
-
+  });
+  
   mainWindow = new BrowserWindow({
     width: winState.width, height: winState.height,
     x: winState.x, y: winState.y, 
@@ -49,13 +31,13 @@ function createWindow () {
   })
 
   // Load index.html into the new BrowserWindow
-  mainWindow.loadFile('index.html');
+  mainWindow.loadFile('./frontend/index.html');
+  
   // Menu da Aplicação
   Menu.setApplicationMenu(mainMenu);
 
   // Salva o estado da tela
   winState.manage(mainWindow);
-
 
   // Open DevTools - Remove for PRODUCTION!
   mainWindow.webContents.openDevTools();
@@ -71,7 +53,7 @@ app.on('ready', () => {
     createWindow();     
 })
 
-// Quit when all windows are closed - (Not macOS - Darwin)
+// Quit when all windows are closed -
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 })
